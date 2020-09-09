@@ -12,7 +12,7 @@ fn float_sign(a: u64) -> f64 {
 }
 
 fn exponent(a: u64) -> f64 {
-	let mut a_e:u64 = a & 0x7f800000;
+	let mut a_e = a & 0x7f800000;
 	a_e = a_e >> 23;
 	let val = ((a_e as f64) - 127_f64)*2.0_f64.log10();
 	return val;
