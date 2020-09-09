@@ -32,16 +32,16 @@ fn mantissa(a: u64) -> f64 {
 }
 
 pub fn f_point(a: u64) -> (){
-	println!("The input register is: {:x}", a);
+	println!("The input register is: 0x{:x}", a);
 
 	let mant = mantissa(a);
-	println!("the mantisa is: {}", mant);
+	println!("the mantisa of the register is: {}", mant);
 
 	let expon = exponent(a);
-	println!("The exponent is: {}", expon);
+	println!("The exponent of the register is: {}", expon);
 
 	let sign = float_sign(a);
-	println!("The sign is: {}", sign);
+	println!("The sign of the register is: {}", sign);
 
 	let float_val = sign*mant*10_f64.powf(expon);
 	println!("The floating point value of the register is: {:?}", float_val);
