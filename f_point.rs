@@ -1,41 +1,48 @@
 static MAX:i32 = 31;
 static MANT_MAX:i32 = 22;
 
-pub fn f_point(a: u64) -> (){
-	let raw_mant = a & 0x003fffff;
-	println!("The raw mantisa is: {:x}", raw_mant);
+fn float_sign(a: u64) -> f64 {
+	let sign: f64;
+	if (a & 0x80000000) != 0 {
+		sign = -1.0 as f64;
+	} else {
+		sign = 1.0 as f64;
+	}
+	return sign;
+}
 
-	let mut mant:f32 = 0.0;
+fn exponent(a: u64) -> f64 {
+	let mut a_e:u64 = a & 0x7f800000;
+	a_e = a_e >> 23;
+	let val = ((a_e as f64) - 127_f64)*2.0_f64.log10();
+	return val;
+}
+
+fn mantissa(a: u64) -> f64 {
+	let mut mant:f64 = 0.0;
 	for i in 0..MAX-8{
 		if (a & (1 << (MANT_MAX -i))) != 0{
-			mant += 1.0/((i+1) as f32).exp2();
+			mant += 1.0/((i+1) as f64).exp2();
 		} else {
 			continue;
 		}
 	}
-	mant += 1.0_f32;
+	mant += 1.0_f64;
+	return mant;
+}
+
+pub fn f_point(a: u64) -> (){
+	println!("The input register is: {:x}", a);
+
+	let mant = mantissa(a);
 	println!("the mantisa is: {}", mant);
 
-	let mut a_e:u64 = a & 0x7f800000;
-	a_e = a_e >> 23;
+	let expon = exponent(a);
+	println!("The exponent is: {}", expon);
 
-	println!("The raw exponent part is: {:x}", a_e);
+	let sign = float_sign(a);
+	println!("The sign is: {}", sign);
 
-	let val:f64;
-	val = ((a_e as f64) - 127_f64)*2.0_f64.log10();
-
-	let round_val:f64;
-	if val < 0.0 {
-		round_val = val.ceil();
-	} else {
-		round_val = val.floor();
-	}
-
-	let frac_val:f64 = val - round_val;
-
-	if (a & 0x80000000) != 0 {
-		println!("The floating point value is: -{}e{}", mant*10_f32.powf(frac_val as f32), (round_val as i32));
-	} else {
-		println!("The floating point value is: {}e{}", mant*10_f32.powf(frac_val as f32), (round_val as i32));
-	}
+	let float_val = sign*mant*10_f64.powf(expon);
+	println!("The floating point value of the register is: {:?}", float_val);
 }
