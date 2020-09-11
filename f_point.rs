@@ -1,4 +1,4 @@
-static MAX:i32 = 31;
+static MAX_REG:i32 = 31;
 static MANT_MAX:i32 = 22;
 
 fn float_sign(a: u64) -> f64 {
@@ -20,7 +20,7 @@ fn exponent(a: u64) -> f64 {
 
 fn mantissa(a: u64) -> f64 {
 	let mut mant:f64 = 0.0;
-	for i in 0..MAX-8{
+	for i in 0..MAX_REG-8{
 		if (a & (1 << (MANT_MAX -i))) != 0{
 			mant += 1.0/((i+1) as f64).exp2();
 		} else {
@@ -44,5 +44,12 @@ pub fn f_point(a: u64) -> (){
 	println!("The sign of the register is: {}", sign);
 
 	let float_val = sign*mant*10_f64.powf(expon);
-	println!("The floating point value of the register is: {:?}", float_val);
+
+	if float_val > f32::MAX as f64 {
+		println!("The floating point value of the register is: {:?}", f32::INFINITY);
+	} else if float_val < f32::MIN as f64 {
+		println!("The floating point value of the register is: {:?}", f32::NEG_INFINITY);
+	} else {
+		println!("The floating point value of the register is: {:?}", float_val);
+	}
 }
